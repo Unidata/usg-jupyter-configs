@@ -4,21 +4,27 @@
 set -e
 
 usage() {
-    echo "Usage: $0 <image-name> [--push] [-f <Dockerfile>]"
-    echo "  <image-name>    Name of the Docker image to build"
-    echo "  --push          Optionally push the Docker image to DockerHub"
-    echo "  -f <Dockerfile> Specify an alternate Dockerfile to use"
-    exit 1
+cat <<USAGE
+Usage: $0 <target-dir> [--push] [-f <Dockerfile>]
+    <target-dir>        Relative to git repo root, e.g. shared/unidata-standard
+    [--push]            Optionally push the Docker image to DockerHub
+    [-f <Dockerfile>]   Specify an alternate Dockerfile to use, relative to <target-dir>
+USAGE
+exit 1
 }
 
 if [ -z "$1" ]; then
-    echo "Error: No image name provided."
+    echo "Error: No target-dir provided."
     usage
 fi
 
-IMAGE_NAME=$1
+TARGET=$1
+IMAGE_NAME=$(basename $TARGET)
 PUSH_IMAGE=false
 DOCKERFILE="Dockerfile"
+
+LOG_OPTS=""
+LOG_FILE="/dev/null"
 
 # Parse optional arguments
 shift
@@ -36,6 +42,10 @@ while [[ $# -gt 0 ]]; do
             DOCKERFILE="$2"
             shift 2
             ;;
+        --log|-l)
+            LOG_OPTS="--progress=plain"
+            shift
+            ;;
         *)
             echo "Unknown option: $1"
             usage
@@ -48,18 +58,32 @@ RANDOM_HEX=$(openssl rand -hex 2)
 TAG="${DATE_TAG}_${RANDOM_HEX}"
 FULL_TAG="unidata/$IMAGE_NAME:$TAG"
 
-# Build the Docker image
-echo "Building Docker image with tag: $FULL_TAG using Dockerfile: $DOCKERFILE"
-docker build --no-cache --pull --tag "$FULL_TAG" -f "$DOCKERFILE" .
+GIT_ROOT=$(git rev-parse --show-toplevel)
+BUILD_DIR=${GIT_ROOT}/${TARGET}
 
-echo "Docker image built successfully: $FULL_TAG"
+if [[ -n "$LOG_OPTS" ]]; then
+    LOG_DIR=$GIT_ROOT/build_logs/${IMAGE_NAME}
+    mkdir -p $LOG_DIR
+    LOG_FILE=${LOG_DIR}/${TAG}.log
+fi
+
+
+# Build the Docker image
+cd $BUILD_DIR
+echo "Building Docker image in $BUILD_DIR with tag: $FULL_TAG using Dockerfile: $DOCKERFILE" | tee -a $LOG_FILE
+docker build --no-cache --pull --tag "$FULL_TAG" -f "$DOCKERFILE" $LOG_OPTS . 2>&1 | tee -a $LOG_FILE
+
+echo "Docker image built successfully: $FULL_TAG" | tee -a $LOG_FILE
 
 if $PUSH_IMAGE; then
-    echo "Pushing Docker image to DockerHub: $FULL_TAG"
-    docker push "$FULL_TAG"
-    echo "Docker image pushed successfully: $FULL_TAG"
+    echo "Pushing Docker image to DockerHub: $FULL_TAG" | tee -a $LOG_FILE
+    docker push "$FULL_TAG" 2>&1 | tee -a $LOG_FILE
+    echo "Docker image pushed successfully: $FULL_TAG" | tee -a $LOG_FILE
 else
-    echo "Skipping Docker image push. Use '--push' to push the image."
+    echo "Skipping Docker image push. Use '--push' to push the image." | tee -a $LOG_FILE
 fi
+
+echo "Thanks, come again!
+Image produced: $FULL_TAG" | tee -a $LOG_FILE
 
 exit 0
