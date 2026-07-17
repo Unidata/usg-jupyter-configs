@@ -5,29 +5,30 @@ set -e
 
 usage() {
 cat <<USAGE
-Usage: $0 <target-dir> [--push] [-f <Dockerfile>]
-    <target-dir>        Relative to git repo root, e.g. shared/unidata-standard
+Usage: $0 <-c|--cluster|-s|--shared <name>> [--push] [-f <Dockerfile>]
+    <-c|--cluster>      The cluster found in ./clusters to build
+    <-s|--shared>       The shared image found in ./images to build
     [--push]            Optionally push the Docker image to DockerHub
     [-f <Dockerfile>]   Specify an alternate Dockerfile to use, relative to <target-dir>
+    [-l|--log]          Log to file in ./build_logs?
+Example usage:
+    bash $0 -c pyaos26f --log
+    bash $0 -s unidata-standard --push
 USAGE
 exit 1
 }
 
-if [ -z "$1" ]; then
-    echo "Error: No target-dir provided."
-    usage
-fi
-
-TARGET=$1
-IMAGE_NAME=$(basename $TARGET)
+TARGET=""
+IMAGE_NAME=""
 PUSH_IMAGE=false
 DOCKERFILE="Dockerfile"
 
 LOG_OPTS=""
 LOG_FILE="/dev/null"
 
-# Parse optional arguments
-shift
+GIT_ROOT=$(git rev-parse --show-toplevel)
+
+# Parse arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --push)
@@ -46,6 +47,19 @@ while [[ $# -gt 0 ]]; do
             LOG_OPTS="--progress=plain"
             shift
             ;;
+        --cluster|-c)
+            IMAGE_NAME=$2
+            TARGET=${GIT_ROOT}/clusters/${IMAGE_NAME}/image
+            # Ensure target exists
+            stat $TARGET &> /dev/null || { echo "Error: $TARGET does not exist!" && usage; }
+            shift 2
+            ;;
+        --shared|-s)
+            IMAGE_NAME=$2
+            TARGET=${GIT_ROOT}/images/${IMAGE_NAME}
+            stat $TARGET &> /dev/null || { echo "Error: $TARGET does not exist!" && usage; }
+            shift 2
+            ;;
         *)
             echo "Unknown option: $1"
             usage
@@ -53,13 +67,15 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+if [[ -z "$IMAGE_NAME" ]]; then
+    echo "Error: No build target provided."
+    usage
+fi
+
 DATE_TAG=$(date "+%Y%b%d_%H%M%S")
 RANDOM_HEX=$(openssl rand -hex 2)
 TAG="${DATE_TAG}_${RANDOM_HEX}"
 FULL_TAG="unidata/$IMAGE_NAME:$TAG"
-
-GIT_ROOT=$(git rev-parse --show-toplevel)
-BUILD_DIR=${GIT_ROOT}/${TARGET}
 
 if [[ -n "$LOG_OPTS" ]]; then
     LOG_DIR=$GIT_ROOT/build_logs/${IMAGE_NAME}
@@ -69,8 +85,8 @@ fi
 
 
 # Build the Docker image
-cd $BUILD_DIR
-echo "Building Docker image in $BUILD_DIR with tag: $FULL_TAG using Dockerfile: $DOCKERFILE" | tee -a $LOG_FILE
+cd $TARGET
+echo "Building Docker image in $TARGET with tag: $FULL_TAG using Dockerfile: $DOCKERFILE" | tee -a $LOG_FILE
 docker build --no-cache --pull --tag "$FULL_TAG" -f "$DOCKERFILE" $LOG_OPTS . 2>&1 | tee -a $LOG_FILE
 
 echo "Docker image built successfully: $FULL_TAG" | tee -a $LOG_FILE
