@@ -15,17 +15,17 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY jupyter_server_proxy_config.py /etc/jupyter/jupyter_server_proxy_config.py
-COPY setup-unidata-desktop.sh /usr/local/bin/before-notebook.d/
-COPY IDV.desktop /usr/local/share/applications/
-COPY cave.desktop /usr/local/share/applications/
+COPY files/jupyter_server_proxy_config.py /etc/jupyter/jupyter_server_proxy_config.py
+COPY files/setup-unidata-desktop.sh /usr/local/bin/before-notebook.d/
+COPY files/IDV.desktop /usr/local/share/applications/
+COPY files/cave.desktop /usr/local/share/applications/
 RUN chmod +x /usr/local/share/applications/IDV.desktop && \
     chmod +x /usr/local/share/applications/cave.desktop && \
     cat /etc/jupyter/jupyter_server_proxy_config.py >> /etc/jupyter/jupyter_server_config.py
 
 RUN mkdir -p /usr/local/share/icons
 
-COPY unidata.svg /usr/local/share/icons
+COPY files/unidata.svg /usr/local/share/icons
 
 USER $NB_UID
 
@@ -48,10 +48,14 @@ RUN mamba create --name $DEFAULT_ENV_NAME --quiet --yes && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-COPY additional_kernels.ipynb update_material.ipynb Acknowledgements.ipynb \
-    default_kernel.py .condarc /
+COPY files/additional_kernels.ipynb \
+     files/update_material.ipynb \
+     files/Acknowledgements.ipynb \
+     files/default_kernel.py \
+     files/.condarc \
+     /
 
 ARG JUPYTER_SETTINGS_DIR=/opt/conda/share/jupyter/lab/settings/
-COPY overrides.json $JUPYTER_SETTINGS_DIR
+COPY files/overrides.json $JUPYTER_SETTINGS_DIR
 
 USER $NB_UID
