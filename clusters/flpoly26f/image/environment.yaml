@@ -18,9 +18,6 @@ dependencies:
   - matplotlib
   - scipy
   - scikit-learn
-  - torch
-  - torchvision
-  - torchaudio
   - jupyterlab
   - seaborn
   - plotly
@@ -31,3 +28,7 @@ dependencies:
     # It is recommended to install a package using pip as a last resort, i.e.
     # when it is not found in the conda repos
     - palmerpenguins # Example data set for data exploration and visualization
+    - torch
+    - torchvision
+    - torchaudio
+    - --extra-index-url https://download.pytorch.org/whl/cpu
