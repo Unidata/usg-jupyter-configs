@@ -12,8 +12,8 @@ $env.jupyterhub.cluster = {
 }
 
 $env.jupyterhub.nodegroup = {
-  name: "jupyter",
-  flavor: "m3.quad",
+  name: "mediums",
+  flavor: "m3.medium",
   autoscaling: true,
   max_nodes: 2 # SET ME!
 }

@@ -1,7 +1,7 @@
 # Multistage Docker build to include the WRF single column model in a
 # JupyterLab environment
 
-FROM ubuntu as build-wrf
+FROM ubuntu:24.04 as build-wrf
 
 ####################################################
 # Begin WRF ideal single column model compilation  #
@@ -141,6 +141,7 @@ RUN set -x && \
     mv /tmp/configure ./configure && chmod u+x ./configure && \
     git diff && \
     echo '33\r0\r' | ./configure && \
+    ./compile em_scm_xy > log.compile 2>&1
 
 ##########################################################
 # Jupyter build stage
@@ -154,15 +155,17 @@ ENV DEFAULT_ENV_NAME=uncc26f \
 
 LABEL maintainer="Unidata <support-gateway@unidata.ucar.edu>"
 
-COPY environment.yaml /tmp/cluster_environment.yaml
 # Install WRF dependencies, then update conda env
+USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends vim nano curl wget zip unzip \
       gcc cpp gfortran g++ openmpi-bin libopenmpi-dev git csh perl file \
       make m4 ca-certificates libgl1 && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    mamba env update \
+    rm -rf /var/lib/apt/lists/*
+USER $NB_UID
+COPY environment.yaml /tmp/cluster_environment.yaml
+RUN mamba env update \
       -n unidata-standard \
       -f /tmp/cluster_environment.yaml && \
     mamba clean --all -f -y && \
