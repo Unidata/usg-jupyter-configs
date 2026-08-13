@@ -15,18 +15,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY files/jupyter_server_proxy_config.py /etc/jupyter/jupyter_server_proxy_config.py
-COPY files/setup-unidata-desktop.sh /usr/local/bin/before-notebook.d/
-COPY files/IDV.desktop /usr/local/share/applications/
-COPY files/cave.desktop /usr/local/share/applications/
-RUN chmod +x /usr/local/share/applications/IDV.desktop && \
-    chmod +x /usr/local/share/applications/cave.desktop && \
-    cat /etc/jupyter/jupyter_server_proxy_config.py >> /etc/jupyter/jupyter_server_config.py
-
-RUN mkdir -p /usr/local/share/icons
-
-COPY files/unidata.svg /usr/local/share/icons
-
 USER $NB_UID
 
 ADD environment.yml /tmp
@@ -57,5 +45,18 @@ COPY files/additional_kernels.ipynb \
 
 ARG JUPYTER_SETTINGS_DIR=/opt/conda/share/jupyter/lab/settings/
 COPY files/overrides.json $JUPYTER_SETTINGS_DIR
+
+USER root
+COPY files/jupyter_server_proxy_config.py /etc/jupyter/jupyter_server_proxy_config.py
+COPY files/setup-unidata-desktop.sh /usr/local/bin/before-notebook.d/
+COPY files/IDV.desktop \
+     files/cave.desktop \
+     /usr/local/share/applications/
+RUN chmod +x /usr/local/share/applications/IDV.desktop && \
+    chmod +x /usr/local/share/applications/cave.desktop && \
+    cat /etc/jupyter/jupyter_server_proxy_config.py >> /etc/jupyter/jupyter_server_config.py && \
+    mkdir -p /usr/local/share/icons
+
+COPY files/unidata.svg /usr/local/share/icons
 
 USER $NB_UID
