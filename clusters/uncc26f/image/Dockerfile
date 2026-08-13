@@ -146,8 +146,7 @@ RUN set -x && \
 # Jupyter build stage
 ##########################################################
  
-ARG BASE_CONTAINER=unidata/unidata-standard:2026Jul17_210706_730d
-FROM $BASE_CONTAINER
+FROM unidata/unidata-standard:2026Aug13_175701_dfae
 
 ENV DEFAULT_ENV_NAME=uncc26f \
     EDITOR=nano \
