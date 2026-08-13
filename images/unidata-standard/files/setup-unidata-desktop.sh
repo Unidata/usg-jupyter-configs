@@ -15,8 +15,8 @@ if [ ! -f "$CAVE_PREFS_FILE" ]; then
   cat <<EOF > "$CAVE_PREFS_FILE"
 alertServer=tcp\\://localhost\\:61998
 eclipse.preferences.version=1
-httpServerAddress=http\\://edex-beta.unidata.ucar.edu\\:9581/services
-httpServerAddressOptions=http\\://edex-beta.unidata.ucar.edu\\:9581/services
+httpServerAddress=http\\://edex-cloud.unidata.ucar.edu\\:9581/services
+httpServerAddressOptions=http\\://edex-cloud.unidata.ucar.edu\\:9581/services
 siteName=OAX
 EOF
 fi
