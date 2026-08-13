@@ -12,6 +12,7 @@ Usage: $0 <-c|--cluster|-s|--shared <name>> [--push] [-f <Dockerfile>]
     [--push]            Optionally push the Docker image to DockerHub
     [-f <Dockerfile>]   Specify an alternate Dockerfile to use, relative to <target-dir>
     [-l|--log]          Log to file in ./build_logs?
+    [--use-cache]       Do not send the --no-cache flag to docker build (--no-cache is the default behavior)
 Example usage:
     bash $0 -c pyaos26f --log
     bash $0 -s unidata-standard --push
@@ -23,6 +24,7 @@ TARGET=""
 IMAGE_NAME=""
 PUSH_IMAGE=false
 DOCKERFILE="Dockerfile"
+CACHE=--no-cache
 
 LOG_OPTS=""
 LOG_FILE="/dev/null"
@@ -61,6 +63,10 @@ while [[ $# -gt 0 ]]; do
             stat $TARGET &> /dev/null || { echo "Error: $TARGET does not exist!" && usage; }
             shift 2
             ;;
+        --use-cache)
+            CACHE=""
+            shift
+            ;;
         *)
             echo "Unknown option: $1"
             usage
@@ -88,7 +94,7 @@ fi
 # Build the Docker image
 cd $TARGET
 echo "Building Docker image in $TARGET with tag: $FULL_TAG using Dockerfile: $DOCKERFILE" | tee -a $LOG_FILE
-docker build --no-cache --pull --tag "$FULL_TAG" -f "$DOCKERFILE" $LOG_OPTS . 2>&1 | tee -a $LOG_FILE
+docker build $CACHE --pull --tag "$FULL_TAG" -f "$DOCKERFILE" $LOG_OPTS . 2>&1 | tee -a $LOG_FILE
 
 echo "Docker image built successfully: $FULL_TAG" | tee -a $LOG_FILE
 
