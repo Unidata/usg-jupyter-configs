@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER=unidata/unidata-standard:2026Jul17_210706_730d
+ARG BASE_CONTAINER=unidata/unidata-standard:2026Aug13_175701_dfae
 FROM $BASE_CONTAINER
 
 ENV DEFAULT_ENV_NAME=cluster_name \
