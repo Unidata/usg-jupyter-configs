@@ -149,7 +149,7 @@ RUN set -x && \
  
 FROM unidata/unidata-standard:2026Aug13_175701_dfae
 
-ENV DEFAULT_ENV_NAME=uncc26f \
+ENV DEFAULT_ENV_NAME=unidata-standard \
     EDITOR=nano \
     VISUAL=nano
 
@@ -168,14 +168,12 @@ COPY environment.yaml /tmp/cluster_environment.yaml
 RUN mamba env update \
       -n unidata-standard \
       -f /tmp/cluster_environment.yaml && \
-    mamba clean --all -f -y && \
-    conda rename -n unidata-standard $DEFAULT_ENV_NAME
+    mamba clean --all -f -y
 
 # - copy WRF from earlier build stage
 # - ensure appropriate ownership
 # - link netcdf
-COPY --from=build-wrf /Build_WRF /Build_WRF
+COPY --from=build-wrf --chown=${NB_UID}:${NB_GID} /Build_WRF /Build_WRF
 USER root
-RUN chown -R ${NB_UID}:${NB_GID} /Build_WRF/WRF && \
-    ldconfig /Build_WRF/LIBRARIES/netcdf/lib
+RUN ldconfig /Build_WRF/LIBRARIES/netcdf/lib
 USER $NB_UID
