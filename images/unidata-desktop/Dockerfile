@@ -103,10 +103,10 @@ RUN curl -SL \
 # Download and install CAVE to /opt/cave
 RUN useradd -u 1001 -g 100 -M -N fxalpha && \
     useradd -u 1002 -g 100 -M -N awips && \
-    curl -o /tmp/awips_install-v23.sh https://downloads.unidata.ucar.edu/awips2/23.4.1-1/linux/awips_install-v23.sh && \
-    chmod 755 /tmp/awips_install-v23.sh && \
-    /tmp/awips_install-v23.sh --cave && \
-    rm -rf /tmp/awips_install-v23.sh && \
+    curl -o /tmp/awips_install.sh https://downloads.unidata.ucar.edu/awips2/current/linux/awips_install.sh && \
+    chmod 755 /tmp/awips_install.sh && \
+    /tmp/awips_install.sh --cave && \
+    rm -rf /tmp/awips_install.sh && \
     mkdir -p /opt/cave/ && \
     ln -s /awips2/cave/cave.sh /opt/cave/cave.sh && \
     chown -R 1000:100 /opt/cave
