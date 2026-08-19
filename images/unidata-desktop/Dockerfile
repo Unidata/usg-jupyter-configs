@@ -90,9 +90,9 @@ RUN set -eux; \
 RUN git clone https://github.com/novnc/novnc --depth=1 ${NOVNC_DIR} && \
     chown -R 1000:100 ${NOVNC_DIR}
 
-# Install IDV TODO: This link is broken. Will fix upon next IDV release.
+# Install IDV
 RUN curl -SL \
-  "https://ramadda.scigw.unidata.ucar.edu/repository/entry/get/IDV_7.0u1.tar.bz2?entryid=7d66263f-e7ee-487e-b901-274ec5c2eb3a" \
+  "https://ramadda.unidata.ucar.edu/repository/entry/get/IDV_7.0u1.tar.bz2?entryid=c6bb9377-f12c-449a-a83f-43337c3e3978" \
   -o /tmp/IDV.tar.bz2 && \
   mkdir -p /opt && \
   tar xvfj /tmp/IDV.tar.bz2 -C /opt && \
