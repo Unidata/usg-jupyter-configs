@@ -1,0 +1,67 @@
+name: uw26f
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Python
+  - python=3.12
+
+  # Jupyter
+  - ipykernel
+  - ipywidgets
+  - jupyterlab
+  - nb_conda_kernels
+
+  # User requested packages
+  - bokeh
+  - python-build
+  - cartopy
+  - celluloid
+  - cfgrib
+  - cmocean
+  - dask
+  - datashader
+  - distributed
+  - fsspec
+  - geoviews
+  - goes2go
+  - gsw
+  - h5netcdf
+  - h5py
+  - hatchling
+  - hvplot
+  - imageio
+  - imageio-ffmpeg
+  - ipympl
+  - matplotlib
+  - matplotlib-inline
+  - metpy
+  - nbdime
+  - nc-time-axis
+  - netcdf-fortran
+  - netcdf4
+  - nodejs
+  - numcodecs
+  - numpy
+  - pandas
+  - pip
+  - plotly
+  - plotnine
+  - pyresample
+  - pytest
+  - python
+  - python-graphviz
+  - satpy
+  - scikit-image
+  - scikit-learn
+  - scipy
+  - seaborn
+  - setuptools
+  - siphon
+  - statsmodels
+  - twine
+  - xarray
+  - xesmf
+  - xgcm
+  - zarr
