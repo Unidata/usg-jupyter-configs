@@ -1,0 +1,20 @@
+name: rsmas26f_wf
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Python
+  - python=3.12
+
+  # Jupyter
+  - ipykernel
+  - ipywidgets
+  - jupyterlab
+  - nb_conda_kernels
+
+  # Scientific Python
+  - numpy
+  - xarray
+  - windspharm
+  
