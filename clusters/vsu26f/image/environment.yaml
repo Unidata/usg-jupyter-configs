@@ -1,0 +1,17 @@
+name: vsu26f
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Python
+  - python=3.12
+
+  # Jupyter
+  - ipykernel
+  - ipywidgets
+  - jupyterlab
+  - nb_conda_kernels
+
+  # User requested packages
+  - gsw
