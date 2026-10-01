@@ -1,0 +1,40 @@
+name: rsmas26f
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Python
+  - python=3.12
+
+  # Jupyter
+  - ipykernel
+  - ipywidgets
+  - jupyterlab
+  - nb_conda_kernels
+
+  # Scientific Python
+  - dask
+  - numpy
+  - pandas
+  - scipy
+  - xarray
+
+  # Visualization
+  - cartopy
+  - matplotlib-base
+  - seaborn
+
+  # Atmospheric / geoscience
+  - cf_xarray
+  - eofs
+  - metpy
+  - netcdf4
+  - shtns
+  - siphon
+  - xesmf
+
+  # Package installation
+  - pip
+  - pip:
+      - MSEplots-pkg
