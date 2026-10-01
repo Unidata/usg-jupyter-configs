@@ -1,0 +1,5 @@
+---
+hub:
+  config:
+    Spawner:
+      http_timeout: 180
