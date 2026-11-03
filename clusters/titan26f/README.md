@@ -42,3 +42,11 @@ kubectl scale deployment/home-nfs \
 ```
 
 Now, running the same `df -h` or `lsblk` commands show the expected volume size.
+
+## Increase Max Node Count
+
+To increase the max node count of the cluster you can run:
+
+```bash
+openstack coe nodegroup update $CLUSTER mediums replace max_node_count=30
+```
